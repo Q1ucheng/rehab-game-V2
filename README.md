@@ -39,8 +39,15 @@ cd rehab-game-V2
 ```bash
 npm install
 ```
+> 下载Node.js：https://nodejs.org/en/download/
+> 
+> 安装完成后，检查Node.js和npm是否安装成功：
+>```bash
+>node -v
+>npm -v
+>```
 
-### 3. 配置环境变量
+### 3. 配置环境变量（非必选）
 
 复制环境变量模板文件：
 
