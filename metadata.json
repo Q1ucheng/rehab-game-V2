@@ -1,0 +1,5 @@
+{
+  "name": "RehabBalance 3D",
+  "description": "A therapeutic 3D human-machine interaction game for rehabilitation training. Control the platform to balance the ball and collect rewards.",
+  "requestFramePermissions": []
+}
