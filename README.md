@@ -1,20 +1,239 @@
 <div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+
+# 康复平衡训练游戏
+
+基于React和Three.js开发的3D康复平衡训练游戏，帮助用户进行上肢康复训练。
+
+[![React](https://img.shields.io/badge/React-19.2.0-blue)](https://reactjs.org/)
+[![Three.js](https://img.shields.io/badge/Three.js-0.181.2-green)](https://threejs.org/)
+[![Firebase](https://img.shields.io/badge/Firebase-12.6.0-orange)](https://firebase.google.com/)
+
 </div>
 
-# Run and deploy your AI Studio app
+## 🎮 功能特性
 
-This contains everything you need to run your app locally.
+- **3D物理引擎游戏** - 基于Cannon.js的逼真物理模拟
+- **实时运动数据记录** - 记录用户训练数据并分析
+- **用户认证系统** - Firebase身份验证
+- **训练数据分析** - 可达空间分析和3D可视化
+- **响应式设计** - 适配不同屏幕尺寸
+- **多难度设置** - 可调节游戏难度
 
-View your app in AI Studio: https://ai.studio/apps/drive/1LNR_zpXYysTXrgwEZhdhEkEtgZ0Hb58T
+## 🚀 快速开始
 
-## Run Locally
+### 前置要求
 
-**Prerequisites:**  Node.js
+- **Node.js** (版本 18.0.0 或更高)
+- **npm** (通常随Node.js一起安装)
+- **Python 3.7+** (用于数据分析服务器)
 
+### 1. 克隆项目
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+```bash
+git clone https://github.com/Q1ucheng/rehab-game-V2.git
+cd rehab-game-V2
+```
+
+### 2. 安装依赖
+
+```bash
+npm install
+```
+
+### 3. 配置环境变量
+
+复制环境变量模板文件：
+
+```bash
+copy .env.example .env
+```
+
+编辑 `.env` 文件，配置你的Firebase项目信息：
+
+```env
+VITE_FIREBASE_API_KEY=你的Firebase_API密钥
+VITE_FIREBASE_AUTH_DOMAIN=你的项目.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=你的项目ID
+VITE_FIREBASE_STORAGE_BUCKET=你的项目.firebasestorage.app
+VITE_FIREBASE_MESSAGING_SENDER_ID=你的发送者ID
+VITE_FIREBASE_APP_ID=你的应用ID
+```
+
+### 4. 启动开发服务器
+
+```bash
+npm run dev
+```
+
+访问 http://localhost:5173 查看应用
+
+## 🔧 可选：启动数据分析服务器
+
+项目包含一个Python数据分析服务器，用于处理训练数据：
+
+### 安装Python依赖
+
+```bash
+pip install websockets asyncio
+```
+
+### 启动数据分析服务器
+
+```bash
+python data_recorder_server.py
+```
+
+服务器将在端口 8765 启动，用于接收和处理训练数据。
+
+## 🏗️ 项目结构
+```
+rehab-game/
+├── 📁 配置文件
+│   ├── package.json              # 项目依赖和脚本配置
+│   ├── package-lock.json         # 依赖锁定文件
+│   ├── tsconfig.json             # TypeScript配置
+│   ├── vite.config.ts            # Vite构建工具配置
+│   ├── .env                      # 环境变量（包含Firebase配置）
+│   ├── .gitignore                # Git忽略规则
+│   └── metadata.json             # 项目元数据
+│
+├── 📁 源代码 (src/)
+│   ├── App.tsx                   # 主应用组件
+│   ├── index.tsx                 # 应用入口点
+│   ├── index.html                # HTML模板
+│   ├── types.ts                  # TypeScript类型定义
+│   │
+│   ├── 📁 components/            # React组件
+│   │   ├── 📁 Game/              # 游戏相关组件
+│   │   │   ├── GameScene.tsx     # 游戏场景主组件
+│   │   │   ├── Ball.tsx          # 球体组件
+│   │   │   ├── Platform.tsx      # 平台组件
+│   │   │   └── ParticleEffect.tsx # 粒子效果组件
+│   │   │
+│   │   └── 📁 UI/                # 用户界面组件
+│   │       ├── AuthScreen.tsx    # 认证界面
+│   │       ├── Dashboard.tsx     # 仪表板
+│   │       ├── HUD.tsx           # 游戏内HUD
+│   │       ├── DifficultySettingsModal.tsx  # 难度设置模态框
+│   │       ├── TrainingDataUpload.tsx       # 训练数据上传
+│   │       ├── TrainingDetailsModal.tsx     # 训练详情模态框
+│   │       └── TrainingResults.tsx          # 训练结果展示
+│   │
+│   ├── 📁 services/              # 服务层
+│   │   ├── firebase.ts           # Firebase服务配置
+│   │   ├── dataRecorder.ts       # 数据记录服务
+│   │   ├── inputController.ts    # 输入控制服务
+│   │   ├── reachableSpaceAnalyzer.ts  # 可达空间分析服务
+│   │   └── trainingDataService.ts     # 训练数据服务
+│   │
+│   └── 📁 store/                 # 状态管理
+│       └── useStore.ts           # Zustand状态存储
+│
+├── 📁 服务器脚本
+│   ├── data_recorder_server.py   # Python数据记录服务器
+│   ├── analyze-server.js         # 数据分析服务器
+│   └── demo.py                   # 演示脚本
+│
+├── 📁 静态资源
+│   ├── 📁 public/                # 公共资源目录
+│   │   └── 📁 traindata/         # 示例训练数据
+│   │
+│   └── 📁 traindata/             # 本地训练数据存储（已排除在Git中）
+│       └── 📁 yyFl2x0Q5OfnUTDlYo5pN32Mk1r1/
+│           ├── Wayne_20251214_01.json
+│           ├── Wayne_20251228_01.json
+│           ├── Wayne_20251228_02.json
+│           └── Wayne_20260104_01.json
+│
+├── 📁 构建和部署
+│   ├── setup.bat                 # Windows环境设置脚本
+│   └── start.bat                 # Windows启动脚本
+│
+├── 📁 node_modules/              # Node.js依赖包（已排除在Git中）
+│   ├── @react-three/             # React Three.js生态
+│   │   ├── cannon/               # 物理引擎绑定
+│   │   ├── drei/                 # 辅助工具库
+│   │   └── fiber/                # React渲染器
+│   ├── three/                    # 3D图形库
+│   ├── firebase/                 # Firebase SDK
+│   ├── zustand/                  # 状态管理库
+│   └── ... (其他依赖)
+│
+└── 📁 .vite/                     # Vite构建缓存（已排除在Git中）
+```
+
+## 📊 技术栈
+
+- **前端框架**: React 19.2.0 + TypeScript
+- **3D图形**: Three.js + React Three Fiber
+- **物理引擎**: Cannon.js
+- **状态管理**: Zustand
+- **构建工具**: Vite
+- **后端服务**: Firebase (认证、数据库)
+- **数据分析**: Python + WebSocket
+
+## 🎯 游戏玩法
+
+1. **用户认证** - 使用Firebase登录系统
+2. **选择难度** - 设置游戏难度级别
+3. **开始训练** - 控制球体在3D空间中移动
+4. **数据记录** - 系统自动记录运动数据
+5. **查看结果** - 分析训练效果和进步
+
+## 🔧 开发命令
+
+```bash
+# 开发模式
+npm run dev
+
+# 构建生产版本
+npm run build
+
+# 预览构建结果
+npm run preview
+
+# 部署到GitHub Pages
+npm run deploy
+```
+
+## 📝 环境配置说明
+
+### Firebase配置
+
+1. 前往 [Firebase控制台](https://console.firebase.google.com/)
+2. 创建新项目或使用现有项目
+3. 启用Authentication和Firestore数据库
+4. 获取项目配置信息并填入`.env`文件
+
+### 训练数据
+
+- 训练数据存储在 `traindata/` 文件夹中
+- 该文件夹已被排除在Git版本控制之外
+- 数据格式为JSON，包含用户训练记录
+
+## 🐛 常见问题
+
+### Q: 启动时出现Firebase错误
+A: 检查`.env`文件中的Firebase配置是否正确
+
+### Q: 3D场景无法加载
+A: 确保浏览器支持WebGL，并检查控制台错误信息
+
+### Q: 数据分析服务器无法启动
+A: 确保Python已安装，并检查端口8765是否被占用
+
+## 🤝 贡献指南
+
+欢迎提交Issue和Pull Request来改进项目！
+
+## 📄 许可证
+
+本项目仅供学习和研究使用。
+
+---
+
+<div align="center">
+
+**开始你的康复训练之旅吧！** 🎮
+
+</div>
