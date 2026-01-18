@@ -67,24 +67,6 @@ export const Ball: React.FC<BallProps> = ({ ballRadius }) => {
       api.velocity.set(0, 0, 0);
       api.angularVelocity.set(0, 0, 0);
     }
-
-    // ADDED: Wrist rotation speed control
-    const wristRotation = inputController.getWristRotation();
-    if (wristRotation.speedMultiplier !== 1.0) {
-      // Apply speed multiplier to ball velocity
-      const currentVelocity = velocity.current;
-      const targetVelocity = currentVelocity.clone().multiplyScalar(wristRotation.speedMultiplier);
-      
-      // Smoothly transition to target velocity
-      const smoothingFactor = 0.1;
-      const newVelocity = currentVelocity.lerp(targetVelocity, smoothingFactor);
-      
-      api.velocity.set(newVelocity.x, newVelocity.y, newVelocity.z);
-    }
-
-    // "Attachment" force (Optional)
-    // If we really wanted to glue it, we could apply force towards platform center,
-    // but the prompt implies falling is possible, so gravity is sufficient.
   });
 
   return (

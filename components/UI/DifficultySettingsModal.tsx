@@ -12,7 +12,7 @@ const DifficultySettingsModal: React.FC<DifficultySettingsModalProps> = ({
   isOpen,
   onClose,
   onStartGame,
-  initialDifficulty = { platformSize: 10, ballRadius: 0.5 }
+  initialDifficulty = { platformSize: 10, ballRadius: 0.5, enableDirectionalCollision: false }
 }) => {
   const [difficulty, setDifficulty] = React.useState<GameDifficulty>(initialDifficulty);
 
@@ -91,6 +91,10 @@ const DifficultySettingsModal: React.FC<DifficultySettingsModalProps> = ({
 
   const handleBallRadiusChange = (radius: number) => {
     setDifficulty(prev => ({ ...prev, ballRadius: radius }));
+  };
+
+  const handleDirectionalCollisionChange = (enabled: boolean) => {
+    setDifficulty(prev => ({ ...prev, enableDirectionalCollision: enabled }));
   };
 
   const handleStartGame = () => {
@@ -193,6 +197,48 @@ const DifficultySettingsModal: React.FC<DifficultySettingsModalProps> = ({
           </div>
         </div>
 
+        {/* 特定方向碰撞设置卡片 */}
+        <div className="bg-slate-900/50 rounded-xl p-6 mb-6">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-semibold text-white">特殊碰撞机制</h3>
+            <span className={`text-lg font-medium ${difficulty.enableDirectionalCollision ? 'text-yellow-400' : 'text-slate-400'}`}>
+              {difficulty.enableDirectionalCollision ? '已开启' : '已关闭'}
+            </span>
+          </div>
+          
+          <div className="space-y-4">
+            <div className="p-4 bg-slate-800/50 rounded-lg">
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <div className="text-white font-medium">开启特定方向碰撞</div>
+                  <div className="text-slate-400 text-sm">
+                    必须从特定方向（黄色发光面）碰撞奖励才能得分
+                  </div>
+                </div>
+                <button
+                  onClick={() => handleDirectionalCollisionChange(!difficulty.enableDirectionalCollision)}
+                  className={`px-4 py-2 rounded-lg font-medium transition ${
+                    difficulty.enableDirectionalCollision
+                      ? 'bg-yellow-600 text-white'
+                      : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                  }`}
+                >
+                  {difficulty.enableDirectionalCollision ? '已开启' : '关闭'}
+                </button>
+              </div>
+              {difficulty.enableDirectionalCollision && (
+                <div className="bg-yellow-900/20 border border-yellow-700/50 rounded-lg p-3 mt-2">
+                  <p className="text-yellow-300 text-sm">
+                    • 奖励方块随机指定一个面为黄色发光面<br/>
+                    • 小球必须从正负45度范围内正面撞上该面才能得分<br/>
+                    • 增加游戏难度和趣味性
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
         {/* 预览信息 */}
         <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-xl p-4 mb-6">
           <h4 className="text-white font-semibold mb-2">Preview Settings</h4>
@@ -204,6 +250,12 @@ const DifficultySettingsModal: React.FC<DifficultySettingsModalProps> = ({
             <div>
               <span className="text-slate-400">Ball Radius:</span>
               <span className="text-white ml-2">{difficulty.ballRadius}</span>
+            </div>
+            <div className="col-span-2">
+              <span className="text-slate-400">Directional Collision:</span>
+              <span className={`ml-2 ${difficulty.enableDirectionalCollision ? 'text-yellow-400' : 'text-slate-400'}`}>
+                {difficulty.enableDirectionalCollision ? 'Enabled' : 'Disabled'}
+              </span>
             </div>
             <div className="col-span-2">
               <span className="text-slate-400">Difficulty Level:</span>

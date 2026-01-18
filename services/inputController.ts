@@ -27,22 +27,22 @@ export class InputController {
   private readonly VJOY_DEADZONE = 0.05;
   private readonly VJOY_SENSITIVITY = 1.2;
 
-  // Wrist rotation control settings (ADDED)
-  private readonly WRIST_ROTATION_DEADZONE = 0.1;
-  private readonly WRIST_ROTATION_SENSITIVITY = 2.0;
-
+  // // Wrist rotation control settings (ADDED)
+  // private readonly WRIST_ROTATION_DEADZONE = 0.1;
+  // private readonly WRIST_ROTATION_SENSITIVITY = 2.0;
+  
   private currentState: InputState = {
     pitch: 0,
     roll: 0,
     yaw: 0
   };
-
-  // ADDED: Wrist rotation state
-  private wristRotationState = {
-    leftWrist: 0,  // LT button value (0-1)
-    rightWrist: 0, // RT button value (0-1)
-    speedMultiplier: 1.0 // Current speed multiplier
-  };
+  
+  // // ADDED: Wrist rotation state
+  // private wristRotationState = {
+  //   leftWrist: 0,  // LT button value (0-1)
+  //   rightWrist: 0, // RT button value (0-1)
+  //   speedMultiplier: 1.0 // Current speed multiplier
+  // };
 
   private constructor() {
     this.dataRecorder = DataRecorder.getInstance();
@@ -211,9 +211,9 @@ export class InputController {
   /**
    * Get wrist rotation state (ADDED)
    */
-  public getWristRotation(): { leftWrist: number, rightWrist: number, speedMultiplier: number } {
-    return this.wristRotationState;
-  }
+  // public getWristRotation(): { leftWrist: number, rightWrist: number, speedMultiplier: number } {
+  //   return this.wristRotationState;
+  // }
 
   /**
    * Polls the current input device and returns the platform orientation.
@@ -263,8 +263,8 @@ export class InputController {
             yaw: yaw * tiltMultiplier
         };
 
-        // ADDED: Wrist rotation control for ball speed
-        this.updateWristRotation(gp);
+        // // ADDED: Wrist rotation control for ball speed
+        // this.updateWristRotation(gp);
 
         // Record input data (unchanged)
         this.dataRecorder.recordInput(this.currentState);
@@ -281,44 +281,44 @@ export class InputController {
    * LT (Left Trigger) -> Left wrist rotation -> Decrease ball speed
    * RT (Right Trigger) -> Right wrist rotation -> Increase ball speed
    */
-  private updateWristRotation(gamepad: Gamepad): void {
-    // Xbox controller trigger mapping:
-    // LT (Left Trigger) = button 6 (index 6)
-    // RT (Right Trigger) = button 7 (index 7)
-    const leftTrigger = gamepad.buttons[6]?.value || 0;
-    const rightTrigger = gamepad.buttons[7]?.value || 0;
+  // private updateWristRotation(gamepad: Gamepad): void {
+  //   // Xbox controller trigger mapping:
+  //   // LT (Left Trigger) = button 6 (index 6)
+  //   // RT (Right Trigger) = button 7 (index 7)
+  //   const leftTrigger = gamepad.buttons[6]?.value || 0;
+  //   const rightTrigger = gamepad.buttons[7]?.value || 0;
 
-    // Apply deadzone to wrist rotation
-    const leftWrist = leftTrigger > this.WRIST_ROTATION_DEADZONE ? leftTrigger : 0;
-    const rightWrist = rightTrigger > this.WRIST_ROTATION_DEADZONE ? rightTrigger : 0;
+  //   // Apply deadzone to wrist rotation
+  //   const leftWrist = leftTrigger > this.WRIST_ROTATION_DEADZONE ? leftTrigger : 0;
+  //   const rightWrist = rightTrigger > this.WRIST_ROTATION_DEADZONE ? rightTrigger : 0;
 
-    // Calculate speed multiplier based on wrist rotation
-    // Left wrist rotation (LT) decreases speed (0.5x to 1.0x)
-    // Right wrist rotation (RT) increases speed (1.0x to 2.0x)
-    let speedMultiplier = 1.0;
+  //   // Calculate speed multiplier based on wrist rotation
+  //   // Left wrist rotation (LT) decreases speed (0.5x to 1.0x)
+  //   // Right wrist rotation (RT) increases speed (1.0x to 2.0x)
+  //   let speedMultiplier = 1.0;
     
-    if (leftWrist > 0) {
-      // Left wrist rotation: decrease speed (0.5x to 1.0x)
-      speedMultiplier = 1.0 - (leftWrist * 0.5);
-    } else if (rightWrist > 0) {
-      // Right wrist rotation: increase speed (1.0x to 2.0x)
-      speedMultiplier = 1.0 + (rightWrist * 1.0);
-    }
+  //   if (leftWrist > 0) {
+  //     // Left wrist rotation: decrease speed (0.5x to 1.0x)
+  //     speedMultiplier = 1.0 - (leftWrist * 0.5);
+  //   } else if (rightWrist > 0) {
+  //     // Right wrist rotation: increase speed (1.0x to 2.0x)
+  //     speedMultiplier = 1.0 + (rightWrist * 1.0);
+  //   }
 
-    // Smooth the transition
-    const smoothingFactor = 0.1;
-    this.wristRotationState.speedMultiplier = 
-      this.wristRotationState.speedMultiplier * (1 - smoothingFactor) + 
-      speedMultiplier * smoothingFactor;
+  //   // Smooth the transition
+  //   const smoothingFactor = 0.1;
+  //   this.wristRotationState.speedMultiplier = 
+  //     this.wristRotationState.speedMultiplier * (1 - smoothingFactor) + 
+  //     speedMultiplier * smoothingFactor;
 
-    this.wristRotationState.leftWrist = leftWrist;
-    this.wristRotationState.rightWrist = rightWrist;
+  //   this.wristRotationState.leftWrist = leftWrist;
+  //   this.wristRotationState.rightWrist = rightWrist;
 
-    // Log wrist rotation state for debugging
-    if (leftWrist > 0.1 || rightWrist > 0.1) {
-      console.log(`Wrist Rotation - LT: ${leftWrist.toFixed(2)}, RT: ${rightWrist.toFixed(2)}, Speed: ${this.wristRotationState.speedMultiplier.toFixed(2)}x`);
-    }
-  }
+  //   // Log wrist rotation state for debugging
+  //   if (leftWrist > 0.1 || rightWrist > 0.1) {
+  //     console.log(`Wrist Rotation - LT: ${leftWrist.toFixed(2)}, RT: ${rightWrist.toFixed(2)}, Speed: ${this.wristRotationState.speedMultiplier.toFixed(2)}x`);
+  //   }
+  // }
 
   // Existing methods remain UNCHANGED:
   public async startDataRecording(): Promise<boolean> {

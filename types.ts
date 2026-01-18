@@ -44,6 +44,7 @@ export interface Vec3 {
 export interface GameDifficulty {
   platformSize: number; // 平板尺寸 (10, 15, 20, 8)
   ballRadius: number;   // 小球半径 (0.5, 0.8, 1.0, 0.3)
+  enableDirectionalCollision?: boolean; // 开启特定方向碰撞
 }
 
 // Extend JSX.IntrinsicElements for React Three Fiber

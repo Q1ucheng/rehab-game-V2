@@ -15,7 +15,6 @@ const HUD: React.FC<HUDProps> = ({ onExitClick, isPlaying, isGameOver }) => {
   
   const [deviceInfo, setDeviceInfo] = useState({ type: 'None', id: null, index: null });
   const [availableDevices, setAvailableDevices] = useState<Array<{index: number, id: string, type: string}>>([]);
-  const [wristRotation, setWristRotation] = useState({ leftWrist: 0, rightWrist: 0, speedMultiplier: 1.0 });
 
   useEffect(() => {
     const updateDeviceInfo = () => {
@@ -31,32 +30,8 @@ const HUD: React.FC<HUDProps> = ({ onExitClick, isPlaying, isGameOver }) => {
     return () => clearInterval(interval);
   }, []);
 
-  // Update wrist rotation state
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const rotation = InputController.getInstance().getWristRotation();
-      setWristRotation(rotation);
-    }, 100); // Update every 100ms
-
-    return () => clearInterval(interval);
-  }, []);
-
   const handleDeviceSwitch = (index: number) => {
     InputController.getInstance().switchToDevice(index);
-  };
-
-  // Get speed indicator color based on multiplier
-  const getSpeedColor = (multiplier: number) => {
-    if (multiplier < 0.8) return 'text-blue-400'; // Slow (blue)
-    if (multiplier > 1.2) return 'text-red-400';  // Fast (red)
-    return 'text-green-400';                      // Normal (green)
-  };
-
-  // Get speed indicator text
-  const getSpeedText = (multiplier: number) => {
-    if (multiplier < 0.8) return '减速';
-    if (multiplier > 1.2) return '加速';
-    return '正常';
   };
 
   // 计算难度星级
@@ -132,46 +107,6 @@ const HUD: React.FC<HUDProps> = ({ onExitClick, isPlaying, isGameOver }) => {
                 <span className="text-emerald-400 font-mono font-bold">
                   {formatBallRadius(gameDifficulty.ballRadius)}
                 </span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Wrist Rotation Speed Indicator - 只在游戏进行中显示 */}
-        {isPlaying && !isGameOver && (
-          <div className="bg-slate-800/80 backdrop-blur-md p-4 rounded-xl border border-slate-700 shadow-xl min-w-[180px] h-28 flex flex-col justify-between">
-            <p className="text-slate-400 text-xs font-bold uppercase tracking-wider">Wrist Control</p>
-            <div className="flex items-center gap-3">
-              <div className="text-center">
-                <div className={`text-lg font-bold ${getSpeedColor(wristRotation.speedMultiplier)}`}>
-                  {getSpeedText(wristRotation.speedMultiplier)}
-                </div>
-                <div className="text-xs text-slate-500">
-                  {wristRotation.speedMultiplier.toFixed(1)}x
-                </div>
-              </div>
-              
-              {/* LT/RT Indicators */}
-              <div className="flex gap-2">
-                <div className="text-center">
-                  <div className="text-blue-400 text-xs">LT</div>
-                  <div className="w-8 h-2 bg-slate-700 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-blue-500 transition-all duration-100"
-                      style={{ width: `${wristRotation.leftWrist * 100}%` }}
-                    />
-                  </div>
-                </div>
-                
-                <div className="text-center">
-                  <div className="text-red-400 text-xs">RT</div>
-                  <div className="w-8 h-2 bg-slate-700 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-red-500 transition-all duration-100"
-                      style={{ width: `${wristRotation.rightWrist * 100}%` }}
-                    />
-                  </div>
-                </div>
               </div>
             </div>
           </div>
