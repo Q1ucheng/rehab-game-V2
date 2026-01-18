@@ -11,7 +11,7 @@
     ],
     "skipLibCheck": true,
     "types": [
-      "node"
+      // 移除 "node" 类型，因为这是浏览器应用
     ],
     "moduleResolution": "bundler",
     "isolatedModules": true,

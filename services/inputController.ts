@@ -266,11 +266,12 @@ export class InputController {
         // // ADDED: Wrist rotation control for ball speed
         // this.updateWristRotation(gp);
 
-        // Record input data (unchanged)
-        this.dataRecorder.recordInput(this.currentState);
+        // 移除：不再手动记录数据，由固定频率采样器自动处理
+        // this.dataRecorder.recordInput(this.currentState);
       }
     } else {
         // Fallback (unchanged)
+        this.currentState = { roll: 0, pitch: 0, yaw: 0 };
     }
 
     return this.currentState;

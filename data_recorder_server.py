@@ -2,6 +2,7 @@ import asyncio
 import websockets
 import json
 import os
+import re
 from datetime import datetime
 import logging
 import uuid
@@ -20,36 +21,50 @@ class TrainingSession:
         self.start_time = datetime.now()
         self.is_active = True
         
-        # 创建用户文件夹
-        self.user_folder = self.get_user_folder_path()
+        # 修改点：统一保存路径为 base_path
+        self.save_directory = self.get_save_directory()
         
-        # 生成文件名
+        # 生成文件名：training_data_序号.json (基于全局目录计数)
         self.filename = self.generate_filename()
 
-    def get_user_folder_path(self):
-        """获取用户文件夹路径"""
-        user_uid = self.user_info.get('uid')
-        if not user_uid:
-            raise ValueError("User UID is required")
-        
-        user_folder = os.path.join(self.base_path, user_uid)
-        if not os.path.exists(user_folder):
-            os.makedirs(user_folder)
-            logger.info(f"Created user folder: {user_folder}")
-        return user_folder
+    def get_save_directory(self):
+        """
+        修改点：不再根据用户UID创建子文件夹
+        直接返回基础路径，实现所有文件全局按序号排序
+        """
+        return self.base_path
 
     def generate_filename(self):
-        """生成文件名"""
-        today = datetime.now().strftime("%Y%m%d")
-        display_name = self.user_info.get('displayName', 'Unknown')
+        """
+        核心逻辑：扫描 base_path 目录下已有的 training_data_序号.json
+        自动计算下一个全局序号
+        """
+        prefix = "training_data_"
+        ext = ".json"
         
-        # 获取今天的文件计数
-        existing_files = [f for f in os.listdir(self.user_folder) 
-                         if f.startswith(f"{display_name}_{today}")]
+        # 1. 确保目录存在
+        if not os.path.exists(self.save_directory):
+            os.makedirs(self.save_directory)
+            return f"{prefix}001{ext}"
+            
+        existing_files = os.listdir(self.save_directory)
         
-        # 计算下一个序号
-        next_number = len(existing_files) + 1
-        return f"{display_name}_{today}_{next_number:02d}.json"
+        # 2. 正则匹配文件名中的数字部分
+        pattern = re.compile(rf"^{prefix}(\d+){ext}$")
+        
+        max_idx = 0
+        for f in existing_files:
+            match = pattern.match(f)
+            if match:
+                idx = int(match.group(1))
+                if idx > max_idx:
+                    max_idx = idx
+        
+        # 3. 序号递增
+        next_idx = max_idx + 1
+        
+        # 4. 返回文件名（如 training_data_001.json）
+        return f"{prefix}{next_idx:03d}{ext}"
 
     def add_data(self, data):
         """添加训练数据"""
@@ -66,7 +81,6 @@ class TrainingSession:
         session_duration = (end_time - self.start_time).total_seconds() * 1000
         
         try:
-            # 准备要保存的数据
             data_to_save = {
                 "session_id": self.session_id,
                 "user": self.user_info,
@@ -77,12 +91,12 @@ class TrainingSession:
                 "training_data": self.training_data
             }
             
-            # 写入文件
-            file_path = os.path.join(self.user_folder, self.filename)
+            # 拼接最终完整路径
+            file_path = os.path.join(self.save_directory, self.filename)
             with open(file_path, 'w', encoding='utf-8') as f:
                 json.dump(data_to_save, f, indent=2, ensure_ascii=False)
             
-            logger.info(f"Successfully saved training session to: {file_path}")
+            logger.info(f"Global sequential file saved: {file_path}")
             return file_path
             
         except Exception as e:
@@ -93,30 +107,26 @@ class TrainingDataRecorder:
     """训练数据记录器主类"""
     def __init__(self, base_path="traindata"):
         self.base_path = base_path
-        self.active_sessions = {}  # session_id -> TrainingSession
+        self.active_sessions = {}
         
-        # 确保基础目录存在
+        # 启动时确保根目录存在
         if not os.path.exists(base_path):
             os.makedirs(base_path)
-            logger.info(f"Created base directory: {base_path}")
+            logger.info(f"Initialized global storage at: {base_path}")
 
     def start_session(self, user_info):
-        """开始新的训练会话"""
         session_id = str(uuid.uuid4())
         session = TrainingSession(session_id, user_info, self.base_path)
         self.active_sessions[session_id] = session
-        logger.info(f"Started new training session: {session_id} for user: {user_info.get('displayName')}")
         return session_id
 
     def add_data_to_session(self, session_id, data):
-        """向指定会话添加数据"""
         if session_id in self.active_sessions:
             self.active_sessions[session_id].add_data(data)
             return True
         return False
 
     def end_session(self, session_id):
-        """结束指定会话并保存数据"""
         if session_id in self.active_sessions:
             session = self.active_sessions[session_id]
             file_path = session.end_session()
@@ -124,119 +134,52 @@ class TrainingDataRecorder:
             return file_path
         return None
 
-    def cleanup_inactive_sessions(self):
-        """清理非活动会话"""
-        inactive_sessions = [sid for sid, session in self.active_sessions.items() if not session.is_active]
-        for session_id in inactive_sessions:
-            del self.active_sessions[session_id]
-
 async def handle_websocket(websocket):
-    """处理WebSocket连接"""
+    """处理WebSocket连接逻辑"""
     recorder = TrainingDataRecorder()
     
     try:
         async for message in websocket:
             try:
                 data = json.loads(message)
-                message_type = data.get('type')
+                msg_type = data.get('type')
                 
-                if message_type == 'connection':
-                    # 连接确认
-                    logger.info(f"Client connected: {data.get('status')}")
-                    await websocket.send(json.dumps({
-                        "type": "acknowledge",
-                        "message": "Connection established"
-                    }))
-                    
-                elif message_type == 'start_session':
-                    # 开始新的训练会话
-                    user_info = data.get('user')
-                    if not user_info:
-                        await websocket.send(json.dumps({
-                            "type": "error",
-                            "message": "User information required to start session"
-                        }))
-                        continue
-                    
+                if msg_type == 'start_session':
+                    user_info = data.get('user', {"uid": "unknown"})
                     session_id = recorder.start_session(user_info)
-                    await websocket.send(json.dumps({
-                        "type": "session_started",
-                        "session_id": session_id
-                    }))
+                    await websocket.send(json.dumps({"type": "session_started", "session_id": session_id}))
                     
-                elif message_type == 'training_data':
-                    # 训练数据
+                elif msg_type == 'training_data':
                     session_id = data.get('session_id')
-                    training_data = data.get('data', [])
-                    
-                    if not session_id:
-                        await websocket.send(json.dumps({
-                            "type": "error",
-                            "message": "Session ID required"
-                        }))
-                        continue
-                    
-                    success = recorder.add_data_to_session(session_id, training_data)
-                    if success:
-                        await websocket.send(json.dumps({
-                            "type": "data_received",
-                            "session_id": session_id,
-                            "data_points": len(training_data)
-                        }))
+                    t_data = data.get('data', [])
+                    if recorder.add_data_to_session(session_id, t_data):
+                        await websocket.send(json.dumps({"type": "data_received", "session_id": session_id}))
                     else:
-                        await websocket.send(json.dumps({
-                            "type": "error",
-                            "message": "Invalid session ID"
-                        }))
+                        await websocket.send(json.dumps({"type": "error", "message": "Session not found"}))
                         
-                elif message_type == 'end_session':
-                    # 结束训练会话
+                elif msg_type == 'end_session':
                     session_id = data.get('session_id')
-                    if not session_id:
-                        await websocket.send(json.dumps({
-                            "type": "error",
-                            "message": "Session ID required"
-                        }))
-                        continue
-                    
                     file_path = recorder.end_session(session_id)
                     if file_path:
                         await websocket.send(json.dumps({
-                            "type": "session_ended",
+                            "type": "session_ended", 
                             "session_id": session_id,
-                            "filename": file_path
+                            "file": file_path
                         }))
                     else:
-                        await websocket.send(json.dumps({
-                            "type": "error",
-                            "message": "Failed to end session"
-                        }))
+                        await websocket.send(json.dumps({"type": "error", "message": "Save failed"}))
                         
-            except json.JSONDecodeError as e:
-                logger.error(f"JSON decode error: {e}")
-                await websocket.send(json.dumps({
-                    "type": "error",
-                    "message": "Invalid JSON format"
-                }))
+            except Exception as e:
+                logger.error(f"Message process error: {e}")
                 
     except websockets.exceptions.ConnectionClosed:
         logger.info("WebSocket connection closed")
-        # 清理所有活动会话
-        recorder.cleanup_inactive_sessions()
 
 async def main():
-    """启动WebSocket服务器"""
-    # 使用新的API，不需要path参数
+    # 启动服务器在 8765 端口
     async with websockets.serve(handle_websocket, "localhost", 8765):
-        logger.info("Training data recorder server started on ws://localhost:8765")
-        await asyncio.Future()  # 保持服务器运行
+        logger.info("Global numbering server started on ws://localhost:8765")
+        await asyncio.Future()
 
 if __name__ == "__main__":
-    # 安装依赖检查
-    try:
-        import websockets
-    except ImportError:
-        print("请安装websockets库: pip install websockets")
-        exit(1)
-    
     asyncio.run(main())

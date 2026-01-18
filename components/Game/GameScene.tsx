@@ -336,6 +336,14 @@ const GameScene: React.FC = () => {
   const [platformRotation, setPlatformRotation] = useState({ pitch: 0, roll: 0, yaw: 0 });
   const animationRef = useRef<number | undefined>(undefined);
 
+  // 确保输入控制器在全局可用
+  useEffect(() => {
+    (window as any).inputController = inputController;
+    return () => {
+      delete (window as any).inputController;
+    };
+  }, [inputController]);
+
   // 使用requestAnimationFrame监听平台旋转变化
   useEffect(() => {
     const updateRotation = () => {

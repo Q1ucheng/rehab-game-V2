@@ -77,12 +77,43 @@ class ReachableSpaceAnalyzer {
    */
   async loadTrainingData(filePath: string): Promise<TrainingSessionData | null> {
     try {
-      const response = await fetch(filePath);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch ${filePath}: ${response.status}`);
+      const raw = filePath.trim();
+      const isUrl = /^[a-z]+:\/\//i.test(raw) || raw.startsWith('blob:') || raw.startsWith('data:');
+      const fileName = (raw.split('/').pop() || '').trim();
+
+      const candidates = Array.from(new Set([
+        raw,
+        // 兼容旧目录结构：/traindata/<uid>/training_data_001.json -> /traindata/training_data_001.json
+        raw.replace(/(\/traindata)\/[^/]+\/(training_data_\d{3}\.json)$/i, '$1/$2'),
+        // 兼容部署子路径：/rehab-game 前缀有无
+        raw.startsWith('/rehab-game/') ? raw.replace('/rehab-game', '') : raw,
+        raw.startsWith('/traindata/') ? `/rehab-game${raw}` : raw,
+        // 仅文件名或路径不完整时的兜底
+        fileName ? `/rehab-game/traindata/${fileName}` : '',
+        fileName ? `/traindata/${fileName}` : '',
+      ]))
+        .map(p => p.replace(/\/{2,}/g, '/'))
+        .filter(Boolean);
+
+      const triedPaths = isUrl ? [raw] : candidates;
+      let lastError: unknown = null;
+
+      for (const candidatePath of triedPaths) {
+        try {
+          const response = await fetch(candidatePath);
+          if (!response.ok) continue;
+          const data = await response.json();
+          return data as TrainingSessionData;
+        } catch (error) {
+          lastError = error;
+        }
       }
-      const data = await response.json();
-      return data as TrainingSessionData;
+
+      throw new Error(
+        `Failed to fetch training data. Tried: ${triedPaths.join(', ')}${
+          lastError ? `; last error: ${String(lastError)}` : ''
+        }`
+      );
     } catch (error) {
       console.error(`Error loading training data from ${filePath}:`, error);
       return null;

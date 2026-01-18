@@ -63,3 +63,15 @@ declare global {
     }
   }
 }
+
+
+export interface TrainingData {
+  timestamp: number;
+  localtime: string;  // 新增：本地时间戳
+  inputState: InputState;
+  gameState: {
+    score: number;
+    fails: number;
+    isGameOver: boolean;
+  };
+}
