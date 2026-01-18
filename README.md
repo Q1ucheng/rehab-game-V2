@@ -2,7 +2,7 @@
 
 # 康复平衡训练游戏
 
-基于React和Three.js开发的3D康复平衡训练游戏，帮助用户进行上肢康复训练。
+基于React和Three.js开发的3D康复平衡训练游戏，帮助用户进行上肢康复训练与分析。
 
 [![React](https://img.shields.io/badge/React-19.2.0-blue)](https://reactjs.org/)
 [![Three.js](https://img.shields.io/badge/Three.js-0.181.2-green)](https://threejs.org/)
