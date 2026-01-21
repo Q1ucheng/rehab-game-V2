@@ -1,3 +1,40 @@
+/**
+ * Firebase服务模块
+ * 
+ * 功能：康复游戏系统的Firebase后端服务和Mock模式支持
+ * 技术栈：TypeScript + Firebase SDK + LocalStorage Mock
+ * 
+ * 主要功能模块：
+ * 1. Firebase配置和初始化（支持环境变量配置）
+ * 2. 认证服务（登录、注册、登出）
+ * 3. 用户资料管理服务（创建、获取、更新用户信息）
+ * 4. Mock模式支持（本地存储回退机制）
+ * 5. 认证状态监听器
+ * 
+ * 核心特性：
+ * - 双模式运行：支持真实Firebase后端和本地Mock模式
+ * - 智能配置检测：自动检测Firebase配置有效性
+ * - 无缝切换：配置缺失时自动回退到Mock模式
+ * - 数据持久化：Mock模式下使用LocalStorage保存数据
+ * - 错误处理：完善的异常处理和日志记录
+ * 
+ * 运行模式：
+ * - 真实模式：当提供有效的Firebase配置时，连接真实Firebase服务
+ * - Mock模式：当配置缺失或初始化失败时，使用本地存储模拟后端
+ * 
+ * 服务接口：
+ * - authService: 用户认证相关操作
+ * - userService: 用户资料管理操作
+ * - initializeAuthListener: 认证状态监听器初始化
+ * 
+ * 数据模型：
+ * - UserProfile: 用户资料数据结构（uid, email, displayName, description, highScore）
+ * - MockDB: Mock模式下的内存数据库，持久化到LocalStorage
+ * 
+ * 作者：Qiucheng Zhao
+ */
+
+
 import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
 import * as firebaseAuth from 'firebase/auth';
 import { 

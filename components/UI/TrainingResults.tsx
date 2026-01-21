@@ -1,3 +1,20 @@
+/**
+ * 训练结果展示组件
+ * 
+ * 功能：显示用户的训练会话列表，支持会话选择和刷新功能
+ * 技术栈：React + TypeScript + Tailwind CSS + Font Awesome
+ * 
+ * 
+ * 主要功能模块：
+ * 1. 训练会话数据加载和状态管理
+ * 2. 时间格式化辅助函数
+ * 3. 响应式UI渲染（加载状态、空状态、数据列表）
+ * 4. 会话选择和刷新交互
+ * 
+ * 作者：Qiucheng Zhao
+ */
+
+
 import React, { useState, useEffect } from 'react';
 import { useStore } from '../../store/useStore';
 import { trainingDataService, TrainingSessionSummary } from '../../services/trainingDataService';

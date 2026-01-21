@@ -1,6 +1,34 @@
+/**
+ * DifficultySettingsModal.tsx
+ * 康复游戏系统难度设置模态框组件
+ * 
+ * 功能概述：
+ * - 提供游戏难度参数配置界面
+ * - 支持平板尺寸、小球半径、碰撞机制等参数设置
+ * - 实时计算和显示难度星级
+ * - 提供难度预览和确认功能
+ * 
+ * 技术栈：
+ * - React + TypeScript + Tailwind CSS
+ * - 响应式模态框设计
+ * - 星级评分系统
+ * 
+ * author: Qiucheng Zhao
+ */
+
+
 import React from 'react';
 import { GameDifficulty } from '../../types';
 
+// ==================== 接口定义 ====================
+/**
+ * DifficultySettingsModalProps接口 - 组件属性定义
+ * 
+ * @property isOpen - 模态框打开状态
+ * @property onClose - 关闭模态框回调函数
+ * @property onStartGame - 开始游戏回调函数（传递难度参数）
+ * @property initialDifficulty - 初始难度设置（可选）
+ */
 interface DifficultySettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -8,6 +36,16 @@ interface DifficultySettingsModalProps {
   initialDifficulty?: GameDifficulty;
 }
 
+// ==================== 组件定义 ====================
+/**
+ * DifficultySettingsModal组件 - 游戏难度设置模态框
+ * 
+ * 主要功能：
+ * - 提供游戏难度参数配置界面
+ * - 实时计算难度星级
+ * - 支持参数预览和确认
+ * - 集成特定方向碰撞机制设置
+ */
 const DifficultySettingsModal: React.FC<DifficultySettingsModalProps> = ({
   isOpen,
   onClose,

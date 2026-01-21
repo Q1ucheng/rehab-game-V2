@@ -1,7 +1,48 @@
+/**
+ * AuthScreen.tsx
+ * 康复游戏系统用户认证界面组件
+ * 
+ * 功能概述：
+ * - 提供用户登录和注册功能
+ * - 集成Firebase认证服务
+ * - 支持登录/注册模式切换
+ * - 包含表单验证和错误处理
+ * - 提供响应式UI设计
+ * 
+ * 技术栈：
+ * - React + TypeScript
+ * - Firebase Authentication
+ * - Tailwind CSS
+ * 
+ * author: Qiucheng Zhao
+ */
+
+
 import React, { useState } from 'react';
 import { authService } from '../../services/firebase';
 
+// ==================== 组件定义 ====================
+/**
+ * AuthScreen组件 - 用户认证界面
+ * 
+ * 主要功能：
+ * - 管理登录/注册状态切换
+ * - 处理用户输入的表单数据
+ * - 调用Firebase认证服务
+ * - 显示认证结果和错误信息
+ */
 const AuthScreen: React.FC = () => {
+  // ==================== 状态管理 ====================
+  /**
+   * 状态变量定义
+   * 
+   * @state isLogin - 控制登录/注册模式切换（true: 登录模式，false: 注册模式）
+   * @state email - 用户输入的邮箱地址
+   * @state password - 用户输入的密码
+   * @state name - 用户输入的姓名（仅在注册模式下使用）
+   * @state error - 认证过程中出现的错误信息
+   * @state loading - 认证请求的加载状态
+   */
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -9,6 +50,19 @@ const AuthScreen: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  // ==================== 认证处理函数 ====================
+  /**
+   * handleSubmit - 表单提交处理函数
+   * 
+   * 功能流程：
+   * 1. 阻止表单默认提交行为
+   * 2. 重置错误状态，设置加载状态
+   * 3. 根据当前模式调用相应的认证服务
+   * 4. 处理认证结果和异常情况
+   * 5. 最终重置加载状态
+   * 
+   * @param e - React表单事件对象
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);

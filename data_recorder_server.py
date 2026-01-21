@@ -1,3 +1,26 @@
+"""
+康复游戏系统 - 训练数据记录服务器
+
+功能描述: 基于WebSocket的异步训练数据记录服务器,负责接收、存储和管理康复训练数据
+技术栈：Python + asyncio + websockets + JSON + logging
+主要功能模块：会话管理、文件存储、WebSocket通信、数据序列化
+核心特性：全局序号文件命名、异步处理、会话生命周期管理、错误处理
+
+
+服务器架构说明：
+- TrainingSession类：管理单个训练会话的生命周期和数据存储
+- TrainingDataRecorder类：管理多个活跃会话和全局文件序号
+- WebSocket处理：异步处理客户端连接和数据传输
+- 文件存储策略：全局序号命名，便于前端按顺序加载训练数据
+
+运行方式：python data_recorder_server.py
+监听端口：8765 (ws://localhost:8765)
+数据存储目录：traindata/
+
+作者：Qiucheng Zhao, Rongfei Yang
+"""
+
+
 import asyncio
 import websockets
 import json

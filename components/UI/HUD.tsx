@@ -1,21 +1,64 @@
+/**
+ * HUD.tsx
+ * 康复游戏系统 - 游戏界面头部显示组件
+ * 
+ * 功能描述：
+ * - 实时显示游戏状态信息（分数、难度、生命值等）
+ * - 设备连接状态监控和切换功能
+ * - 难度星级计算和显示
+ * - 退出游戏功能控制
+ * 
+ * 技术栈：
+ * - React + TypeScript
+ * - Tailwind CSS (UI样式)
+ * - Zustand (状态管理)
+ * - InputController (输入设备控制)
+ * 
+ * author: Qiucheng Zhao
+ */
+
+
 import React, { useEffect, useState } from 'react';
 import { useStore } from '../../store/useStore';
 import { AppScreen } from '../../types';
 import { InputController } from '../../services/inputController';
 
+
+// ============================== 组件接口定义 ==============================
+/**
+ * HUD组件属性接口
+ * @interface HUDProps
+ * @property {() => void} onExitClick - 退出按钮点击回调函数
+ * @property {boolean} isPlaying - 游戏是否正在进行中
+ * @property {boolean} isGameOver - 游戏是否已结束
+ */
 interface HUDProps {
   onExitClick: () => void;
   isPlaying: boolean;
   isGameOver: boolean;
 }
 
+
+// ============================== 模块3：组件定义和状态管理 ==============================
+/**
+ * HUD组件 - 游戏头部显示界面
+ * @component HUD
+ * @param {HUDProps} props - 组件属性
+ * @returns {JSX.Element} 渲染的HUD界面
+ */
 const HUD: React.FC<HUDProps> = ({ onExitClick, isPlaying, isGameOver }) => {
   const { score, fails, maxFails, gameDifficulty } = useStore();
   const lives = Math.max(0, maxFails - fails);
   
   const [deviceInfo, setDeviceInfo] = useState({ type: 'None', id: null, index: null });
   const [availableDevices, setAvailableDevices] = useState<Array<{index: number, id: string, type: string}>>([]);
-
+  
+  // ============================== 设备信息监控 ==============================
+  /**
+   * 设备信息监控效果钩子
+   * - 每1秒更新一次设备连接状态
+   * - 获取当前连接的设备信息和可用设备列表
+   */
   useEffect(() => {
     const updateDeviceInfo = () => {
       const info = InputController.getInstance().getDeviceInfo();
@@ -30,6 +73,11 @@ const HUD: React.FC<HUDProps> = ({ onExitClick, isPlaying, isGameOver }) => {
     return () => clearInterval(interval);
   }, []);
 
+  // ============================== 设备切换功能 ==============================
+  /**
+   * 设备切换处理函数
+   * @param {number} index - 要切换到的设备索引
+   */
   const handleDeviceSwitch = (index: number) => {
     InputController.getInstance().switchToDevice(index);
   };

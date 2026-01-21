@@ -1,4 +1,23 @@
 {
+  /**
+   * 康复游戏系统 - TypeScript配置
+   * 
+   * 功能描述：配置TypeScript编译器，管理类型检查和编译行为
+   * 技术栈：TypeScript + React + ES2022
+   * 主要功能模块：编译目标设置、模块系统配置、路径映射、JSX支持
+   * 核心特性：现代JavaScript支持、React JSX转换、路径别名、类型检查优化
+   * 
+   * 
+   * 文件说明：
+   * - 配置编译目标为ES2022，使用现代JavaScript特性
+   * - 启用实验性装饰器支持
+   * - 配置模块系统和解析策略
+   * - 设置路径别名，简化导入语句
+   * - 启用React JSX转换，支持React开发
+   * - 优化类型检查性能，跳过库文件检查
+   *
+   * 作者：Qiucheng Zhao
+   */
   "compilerOptions": {
     "target": "ES2022",
     "experimentalDecorators": true,

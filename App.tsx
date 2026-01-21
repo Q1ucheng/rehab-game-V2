@@ -1,3 +1,21 @@
+/**
+ * 康复游戏系统 - 主应用组件
+ * 
+ * 功能描述：康复游戏系统的根组件，负责应用的整体布局、界面路由和功能集成
+ * 技术栈：React + TypeScript + Tailwind CSS + Zustand状态管理
+ * 主要功能模块：应用路由管理、用户认证监听、可达空间分析测试、界面渲染
+ * 核心特性：多界面切换、Firebase认证集成、开发模式测试功能、响应式布局
+ * 
+ * 组件功能说明：
+ * - 应用路由：根据当前状态在认证界面、仪表盘界面和游戏界面之间切换
+ * - 认证监听：集成Firebase认证监听器，自动处理用户登录状态变化
+ * - 测试功能：开发模式下提供可达空间分析功能的测试按钮
+ * - 界面渲染：使用Tailwind CSS实现响应式布局和美观的UI界面
+ * 
+ * 作者：Qiucheng Zhao
+ */
+
+
 import React, { useEffect, useState } from 'react';
 import { useStore } from './store/useStore';
 import { AppScreen } from './types';

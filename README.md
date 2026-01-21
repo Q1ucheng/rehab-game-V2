@@ -168,7 +168,10 @@ rehab-game/
 │
 └── 📁 .vite/                     # Vite构建缓存（已排除在Git中）
 ```
-
+统计代码量：
+```bash
+find . -type f | grep -v -E "(node_modules|traindata|public|.git)" | xargs wc -l
+```
 ## 📊 技术栈
 
 - **前端框架**: React 19.2.0 + TypeScript

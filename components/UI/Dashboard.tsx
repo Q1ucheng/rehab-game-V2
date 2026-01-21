@@ -1,3 +1,25 @@
+/**
+ * Dashboard.tsx
+ * 康复游戏系统主控制面板组件
+ * 
+ * 功能概述：
+ * - 用户个人资料管理和显示
+ * - 训练历史记录查看
+ * - 训练会话启动和难度设置
+ * - 医疗笔记编辑和保存
+ * - 训练数据上传管理
+ * - 用户认证状态管理
+ * 
+ * 技术栈：
+ * - React + TypeScript + Tailwind CSS
+ * - Firebase Authentication & Firestore
+ * - Zustand状态管理
+ * - 响应式网格布局
+ * 
+ * author: Qiucheng Zhao
+ */
+
+
 import React, { useState, useEffect } from 'react';
 import { useStore } from '../../store/useStore';
 import { authService, userService } from '../../services/firebase';
@@ -7,6 +29,17 @@ import TrainingDetailsModal from './TrainingDetailsModal';
 import DifficultySettingsModal from './DifficultySettingsModal';
 import TrainingDataUpload from './TrainingDataUpload';
 
+
+// ==================== 接口定义 ====================
+/**
+ * TrainingSession接口 - 训练会话数据结构
+ * 
+ * 包含训练会话的完整信息：
+ * - 会话标识和用户信息
+ * - 时间戳和持续时间
+ * - 训练数据和成绩统计
+ * - 文件路径信息
+ */
 interface TrainingSession {
   session_id: string;
   user: {
@@ -23,7 +56,31 @@ interface TrainingSession {
   file_path: string;
 }
 
+
+// ==================== 模块3：组件定义 ====================
+/**
+ * Dashboard组件 - 康复训练主控制面板
+ * 
+ * 主要功能：
+ * - 用户个人资料同步和编辑
+ * - 训练历史记录展示和筛选
+ * - 训练会话启动流程控制
+ * - 难度设置和游戏启动
+ * - 数据刷新和状态管理
+ */
 const Dashboard: React.FC = () => {
+  // ==================== 状态管理 ====================
+  /**
+   * 状态变量定义
+   * 
+   * @state description - 用户医疗笔记/状态描述
+   * @state isEditing - 编辑模式状态
+   * @state saving - 保存操作加载状态
+   * @state selectedSession - 选中的训练会话
+   * @state isModalOpen - 训练详情模态框状态
+   * @state isDifficultyModalOpen - 难度设置模态框状态
+   * @state refreshTrigger - 数据刷新触发器
+   */
   const { user, setCurrentScreen, score, setGameDifficulty } = useStore();
   const [description, setDescription] = useState(user?.description || '');
   const [isEditing, setIsEditing] = useState(false);
@@ -33,7 +90,15 @@ const Dashboard: React.FC = () => {
   const [isDifficultyModalOpen, setIsDifficultyModalOpen] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  // Sync user profile data on load
+  // ==================== 副作用处理 ====================
+  /**
+   * useEffect - 用户数据同步副作用
+   * 
+   * 功能：
+   * - 用户登录时同步个人资料数据
+   * - 更新最高分记录到Firebase
+   * - 依赖user和score状态变化
+   */
   useEffect(() => {
     if (user) {
       setDescription(user.description || '');
@@ -43,6 +108,16 @@ const Dashboard: React.FC = () => {
     }
   }, [user, score]);
 
+  // ==================== 事件处理函数 ====================
+  /**
+   * handleSaveProfile - 保存用户资料
+   * 
+   * 流程：
+   * 1. 验证用户存在性
+   * 2. 设置保存状态
+   * 3. 调用Firebase更新服务
+   * 4. 重置状态和退出编辑模式
+   */
   const handleSaveProfile = async () => {
     if (!user) return;
     setSaving(true);

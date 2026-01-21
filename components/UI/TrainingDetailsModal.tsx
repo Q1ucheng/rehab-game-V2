@@ -1,3 +1,23 @@
+/**
+ * TrainingDetailsModal.tsx
+ * 康复游戏系统 - 训练会话详情模态框组件
+ * 
+ * 功能描述：
+ * - 显示单个训练会话的详细信息（用户信息、会话信息、性能统计）
+ * - 提供多种数据分析模式（浏览器分析、服务器分析、本地分析）
+ * - 3D可达空间可视化展示
+ * - 分析结果导出和查看功能
+ * 
+ * 技术栈：
+ * - React + TypeScript
+ * - Tailwind CSS (UI样式)
+ * - trainingDataService (训练数据服务)
+ * - reachableSpaceAnalyzer (可达空间分析服务)
+ * 
+ * author: Qiucheng Zhao
+ */
+
+
 import React, { useState, useEffect } from 'react';
 import { TrainingSessionSummary, trainingDataService } from '../../services/trainingDataService';
 import { reachableSpaceAnalyzer, AnalysisResult } from '../../services/reachableSpaceAnalyzer';

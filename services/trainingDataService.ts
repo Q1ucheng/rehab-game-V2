@@ -1,4 +1,22 @@
 /**
+ * 康复游戏系统 - 训练数据服务模块
+ * 
+ * 功能描述：负责训练会话数据的加载、处理、格式化和上传服务
+ * 技术栈：TypeScript + Fetch API + Firebase Firestore
+ * 主要功能模块：数据接口定义、训练会话管理、文件探测读取、数据格式化、Firebase上传
+ * 核心特性：支持Mock模式、浏览器环境文件探测、用户数据过滤、成功率计算
+ * 
+ * 模块说明：
+ * - TrainingSessionData: 训练会话详细数据接口
+ * - TrainingSessionSummary: 训练会话摘要接口（列表显示用）
+ * - TrainingDataService: 训练数据服务类，包含数据加载、处理、上传等核心功能
+ * - 运行模式：支持Mock模式（本地存储）和真实Firebase后端连接
+ * 
+ * 作者：Qiucheng Zhao
+ */
+
+
+/**
  * 训练会话详细数据接口
  */
 export interface TrainingSessionData {
